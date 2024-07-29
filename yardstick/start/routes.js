@@ -24,8 +24,13 @@ const User = use('App/Models/User')
 // Route.get('users', async () => {
 //     return await User.findOrFail(3)
 //   })
-Route.get('users/:id', 'UserController.index')
-Route.get('update', 'UserController.update') 
+//CRUD
+Route.post('store', 'UserController.store')
+Route.get('users', 'UserController.users')
+Route.get('userById', 'UserController.userById')
+Route.put('updateById', 'UserController.updateById')
+Route.delete('deleteById', 'UserController.deleteById')
+
 Route.get('fill', 'UserController.tryfill') 
 Route.get('merge', 'UserController.trymerge')      
 Route.get('create', 'UserController.tryCreate')

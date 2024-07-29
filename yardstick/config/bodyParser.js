@@ -1,6 +1,8 @@
 'use strict'
 
 module.exports = {
+  allowedMethods: ['POST', 'PUT', 'PATCH', 'DELETE'],
+
   /*
   |--------------------------------------------------------------------------
   | JSON Parser

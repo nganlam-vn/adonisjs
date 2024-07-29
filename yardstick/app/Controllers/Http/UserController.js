@@ -3,25 +3,47 @@ const Database = use('Database')
 const User = use('App/Models/User')
 
 class UserController {
-        async store({ view}) {
+    async users(){
+        const users = await User.all()
+        return users
+    }
+        async store({request, response}) {
             const user = new User()
-            user.username = 'katties'
-            user.email = 'katies@gmail.com'
-            user.password ='123456'
-            await user.save();
-    
-            //fetch all users
-            const users = await User.all();
-            return view.render('index', {users: users.toJSON()}) // render the users view
-        }
-        async index() {
-           const result =  await User.find(1)
-           return result
-        }
-        async update() {
-            const user = await User.find(1)
-            user.username = 'updated user'
+            // console.log(request.all())
+            const body = request.only(['username', 'email', 'password'])
+            user.username = body.username
+            user.email = body.email
+            user.password = body.password
             await user.save()
+            return response.json({message: 'User created!'})
+        }
+        async userById({request}) {
+            const user = new User()
+            const body = request.only(['id'])
+            user.id = body.id
+            const result = await User.find(user.id)
+            return result
+        }
+
+        async updateById({request}) {
+            const user = new User()
+            const body = request.only(['id', 'username', 'email', 'password'])
+            user.id = body.id
+            const result = await User.find(user.id)
+            result.username = body.username
+            result.email = body.email
+            result.password = body.password
+            await result.save()
+            return result
+        }
+
+        async deleteById({request, response}) {
+            const user = new User()
+            const body = request.only(['id'])
+            user.id = body.id
+            const result = await User.find(user.id)
+            await result.delete()
+            return response.json({message: 'User deleted!'})
         }
         async tryfill(){
             const user = new User()
@@ -47,10 +69,10 @@ class UserController {
         async bulkUpdate(){
             await User.query().where('username', 'lee').update({password: 'lee123'})
         }
-        async delete(req){
-            const user = await User.find(req.params.id)
-            await user.delete()
-        }
+        // async delete(req){
+        //     const user = await User.find(req.params.id)
+        //     await user.delete()
+        // }
         async bulkDelete(){
             await User.query().where('username', 'name changed').delete()
         }
