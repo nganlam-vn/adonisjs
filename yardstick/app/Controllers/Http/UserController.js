@@ -3,11 +3,32 @@ const Database = use('Database')
 const User = use('App/Models/User')
 
 class UserController {
-    async users(){
+    async login({request, response}){
+        const body = request.only(['username', 'password'])
+        let user = null
+        user = await User.findBy('username', body.username) //find user by email
+        if(user){
+            if(user.password === body.password && user.username === body.username){
+                return response.json({message: 'Login successful!'})
+            }
+            else {
+                // Return failure response for incorrect password
+                return response.status(401).json({
+                    message: 'Incorrect password',
+                });
+            }
+        }
+        return response.status(404).json({
+            message: 'User not found',
+        });
+
+    }
+    //CRUD
+    async getUsers(){
         const users = await User.all()
         return users
     }
-        async store({request, response}) {
+        async addUsers({request, response}) {
             const user = new User()
             // console.log(request.all())
             const body = request.only(['username', 'email', 'password'])
@@ -17,7 +38,7 @@ class UserController {
             await user.save()
             return response.json({message: 'User created!'})
         }
-        async userById({request}) {
+        async getUserById({request}) {
             const user = new User()
             const body = request.only(['id'])
             user.id = body.id
@@ -45,6 +66,8 @@ class UserController {
             await result.delete()
             return response.json({message: 'User deleted!'})
         }
+
+        //TEST
         async tryfill(){
             const user = new User()
             user.username = 'Emily'
