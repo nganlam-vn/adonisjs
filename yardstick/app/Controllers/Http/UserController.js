@@ -4,12 +4,21 @@ const User = use('App/Models/User')
 
 class UserController {
     async login({request, response}){
-        const body = request.only(['username', 'password'])
+        
+        
+        const body = request.only(['username', 'password']) // Lấy thông tin người dùng từ request
+        // // Xác thực người dùng
+        // const token = await auth.attempt(username, password)
         let user = null
-        user = await User.findBy('username', body.username) //find user by email
+        user = await User.findBy('username', body.username) //find user by username
         if(user){
             if(user.password === body.password && user.username === body.username){
-                return response.json({message: 'Login successful!'})
+                return response.status(200).json({
+                    message: 'Login successful!',
+                      // Trả về token và thông tin người dùng (bao gồm ID)
+                    // user: user,
+                    // token: token
+                })
             }
             else {
                 // Return failure response for incorrect password
@@ -18,6 +27,7 @@ class UserController {
                 });
             }
         }
+        
         return response.status(404).json({
             message: 'User not found',
         });
@@ -67,38 +77,6 @@ class UserController {
             return response.json({message: 'User deleted!'})
         }
 
-        //TEST
-        async tryfill(){
-            const user = new User()
-            user.username = 'Emily'
-            user.email = 'emily@gmail.com'
-            user.password = '123456'
-
-            user.fill({username: 'name changed', email: 'changed', password: 'changed'}) // remove existing values, only set username.
-            await user.save()
-        }
-        async trymerge(){ 
-            const user = new User()
-            user.fill({username: 'name', email: 'email', password: 'password'})
-            user.merge({username: 'lee'}) // only set username
-            await user.save()
-        }
-        async tryCreate(request){ //error
-            const userData = request.only(['username', 'email', 'password'])
-            const user = await User.create(userData)
-            return user
-        }
-
-        async bulkUpdate(){
-            await User.query().where('username', 'lee').update({password: 'lee123'})
-        }
-        // async delete(req){
-        //     const user = await User.find(req.params.id)
-        //     await user.delete()
-        // }
-        async bulkDelete(){
-            await User.query().where('username', 'name changed').delete()
-        }
 }
 
 module.exports = UserController
